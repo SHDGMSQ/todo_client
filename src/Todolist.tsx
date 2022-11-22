@@ -1,17 +1,18 @@
-import React, {MouseEventHandler} from 'react';
+import React, {ChangeEvent, useState, KeyboardEvent} from 'react';
 import {FilterValuesType} from './App';
 
 //types
 export type TaskType = {
-    id: number
+    id: string
     title: string
     isDone: boolean
 }
 type TodolistType = {
     title: string
     tasks: TaskType[]
-    removeTask: (id: number) => void
+    removeTask: (id: string) => void
     changeFilter: (value: FilterValuesType) => void
+    addTask: (title: string) => void
 }
 
 export const Todolist: React.FC<TodolistType> = (
@@ -20,25 +21,45 @@ export const Todolist: React.FC<TodolistType> = (
         tasks,
         removeTask,
         changeFilter,
+        addTask
     }) => {
 
-    const removeTaskHandler = (id: number) => removeTask(id);
-    const changeFilterAllHandler = () => changeFilter('all');
-    const changeFilterActiveHandler = () => changeFilter('active');
-    const changeFilterCompletedHandler = () => changeFilter('completed');
+    //state
+    const [taskTitle, setTaskTitle] = useState<string>('');
+
+    //callbacks
+    const addTaskHandler = () => {
+        addTask(taskTitle)
+        setTaskTitle('')
+    };
+    const changeTaskTitleHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setTaskTitle(e.currentTarget.value);
+    };
+    const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            addTaskHandler()
+        }
+    }
+    const onAllClickHandler = () => changeFilter('all');
+    const onActiveClickHandler = () => changeFilter('active');
+    const onCompletedClickHandler = () => changeFilter('completed');
 
     return (
         <div>
             <h3>{title}</h3>
             <div>
-                <input/>
-                <button>+</button>
+                <input
+                    value={taskTitle}
+                    onChange={changeTaskTitleHandler}
+                    onKeyPress={onKeyPressHandler}
+                />
+                <button onClick={addTaskHandler}>+</button>
             </div>
             <ul>
                 {
                     tasks.map((m, i) => {
 
-                            const removeTaskCallback = () => removeTaskHandler(m.id);
+                            const removeTaskHandler = () => removeTask(m.id);
 
                             return (
                                 <li key={i}>
@@ -47,7 +68,7 @@ export const Todolist: React.FC<TodolistType> = (
                                         checked={m.isDone}
                                     />
                                     <span>{m.title}</span>
-                                    <button onClick={removeTaskCallback}>x
+                                    <button onClick={removeTaskHandler}>x
                                     </button>
                                 </li>
                             );
@@ -55,9 +76,9 @@ export const Todolist: React.FC<TodolistType> = (
                     )
                 }
             </ul>
-            <button onClick={changeFilterAllHandler}>All</button>
-            <button onClick={changeFilterActiveHandler}>Active</button>
-            <button onClick={changeFilterCompletedHandler}>Completed</button>
+            <button onClick={onAllClickHandler}>All</button>
+            <button onClick={onActiveClickHandler}>Active</button>
+            <button onClick={onCompletedClickHandler}>Completed</button>
         </div>
     );
 };
