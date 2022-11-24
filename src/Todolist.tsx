@@ -9,23 +9,25 @@ export type TaskType = {
     isDone: boolean
 }
 type TodolistType = {
+    todolistId: string
     title: string
     tasks: TaskType[]
-    removeTask: (id: string) => void
-    changeFilter: (value: FilterValuesType) => void
-    addTask: (title: string) => void
-    changeTask: (taskId: string, isDone: boolean) => void
+    removeTask: (todolistId: string, taskId: string) => void
+    changeFilter: (todolistId: string, value: FilterValuesType) => void
+    // addTask: (title: string) => void
+    // changeTask: (taskId: string, isDone: boolean) => void
     filter: FilterValuesType
 }
 
 export const Todolist: React.FC<TodolistType> = (
     {
+        todolistId,
         title,
         tasks,
         removeTask,
         changeFilter,
-        addTask,
-        changeTask,
+        // addTask,
+        // changeTask,
         filter
     }) => {
 
@@ -34,26 +36,26 @@ export const Todolist: React.FC<TodolistType> = (
     const [error, setError] = useState<string | null>(null);
 
     //callbacks
-    const addTaskHandler = () => {
-        if (taskTitle.trim() === '') {
-            setError('Title is required');
-            return;
-        }
-        addTask(taskTitle.trim());
-        setTaskTitle('');
-    };
+    // const addTaskHandler = () => {
+    //     if (taskTitle.trim() === '') {
+    //         setError('Title is required');
+    //         return;
+    //     }
+    //     addTask(taskTitle.trim());
+    //     setTaskTitle('');
+    // };
     const changeTaskTitleHandler = (e: ChangeEvent<HTMLInputElement>) => {
         setTaskTitle(e.currentTarget.value);
     };
-    const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-        setError(null);
-        if (e.key === 'Enter') {
-            addTaskHandler();
-        }
-    };
-    const onAllClickHandler = () => changeFilter('all');
-    const onActiveClickHandler = () => changeFilter('active');
-    const onCompletedClickHandler = () => changeFilter('completed');
+    // const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
+    //     setError(null);
+    //     if (e.key === 'Enter') {
+    //         addTaskHandler();
+    //     }
+    // };
+    const onAllClickHandler = () => changeFilter(todolistId, 'all');
+    const onActiveClickHandler = () => changeFilter(todolistId, 'active');
+    const onCompletedClickHandler = () => changeFilter(todolistId, 'completed');
     const onClickInputAfterError = () => setError(null);
 
     return (
@@ -65,26 +67,26 @@ export const Todolist: React.FC<TodolistType> = (
                     className={error ? 'error' : ''}
                     value={taskTitle}
                     onChange={changeTaskTitleHandler}
-                    onKeyPress={onKeyPressHandler}
+                    // onKeyPress={onKeyPressHandler}
                 />
-                <button onClick={addTaskHandler}>+</button>
+                {/*<button onClick={addTaskHandler}>+</button>*/}
                 <div className="error-message">{error}</div>
             </div>
             <ul>
                 {
                     tasks.map((m, i) => {
 
-                            const removeTaskHandler = () => removeTask(m.id);
-                            const changeTaskHandler = (e: ChangeEvent<HTMLInputElement>) => {
-                                changeTask(m.id, e.currentTarget.checked);
-                            };
+                            const removeTaskHandler = () => removeTask(todolistId, m.id);
+                            // const changeTaskHandler = (e: ChangeEvent<HTMLInputElement>) => {
+                            //     changeTask(m.id, e.currentTarget.checked);
+                            // };
 
                             return (
                                 <li key={i} className={m.isDone? 'isDone': ''} >
                                     <input
                                         type="checkbox"
                                         checked={m.isDone}
-                                        onChange={changeTaskHandler}
+                                        // onChange={changeTaskHandler}
                                     />
                                     <span>{m.title}</span>
                                     <button onClick={removeTaskHandler}>x
